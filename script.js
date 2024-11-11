@@ -2,19 +2,20 @@
 const gridSize = 10;
 const gridElement = document.getElementById("grid");
 const messageElement = document.getElementById("message");
+const shipStatusElement = document.getElementById("shipStatus");
 
 const ships = [
-    { name: "Lentotukialus", size: 5 },
-    { name: "Taistelulaiva", size: 4 },
-    { name: "Risteilijä", size: 3 },
-    { name: "Risteilijä", size: 3 },
-    { name: "Hävittäjä", size: 2 },
-    { name: "Hävittäjä", size: 2 },
-    { name: "Hävittäjä", size: 2 },
-    { name: "Sukellusvene", size: 1 },
-    { name: "Sukellusvene", size: 1 },
-    { name: "Sukellusvene", size: 1 },
-    { name: "Sukellusvene", size: 1 }
+    { name: "Lentotukialus", size: 5, hits: 0 },
+    { name: "Taistelulaiva", size: 4, hits: 0 },
+    { name: "Risteilijä", size: 3, hits: 0 },
+    { name: "Risteilijä", size: 3, hits: 0 },
+    { name: "Hävittäjä", size: 2, hits: 0 },
+    { name: "Hävittäjä", size: 2, hits: 0 },
+    { name: "Hävittäjä", size: 2, hits: 0 },
+    { name: "Sukellusvene", size: 1, hits: 0 },
+    { name: "Sukellusvene", size: 1, hits: 0 },
+    { name: "Sukellusvene", size: 1, hits: 0 },
+    { name: "Sukellusvene", size: 1, hits: 0 }
 ];
 
 // Laivojen sijainnit
@@ -25,8 +26,10 @@ function restartGame() {
     gridElement.innerHTML = ""; // Tyhjentää ruudukon
     messageElement.textContent = ""; // Tyhjentää viestit
     shipLocations = []; // Nollaa laivojen sijainnit
+    ships.forEach(ship => ship.hits = 0); // Nollaa osumat laivoille
     createGrid(); // Luo uusi ruudukko
     placeShips(); // Sijoittaa laivat ruudukkoon
+    updateShipStatus(); // Päivittää laivalistan
     console.log("Peli aloitettu uudelleen");
 }
 
@@ -55,7 +58,7 @@ function placeShips() {
             const startCol = Math.floor(Math.random() * gridSize);
 
             if (canPlaceShip(startRow, startCol, ship.size, direction)) {
-                placeShip(startRow, startCol, ship.size, direction);
+                placeShip(startRow, startCol, ship.size, direction, ship);
                 placed = true;
             }
         }
@@ -67,7 +70,7 @@ function placeShips() {
 function canPlaceShip(row, col, size, direction) {
     for (let i = 0; i < size; i++) {
         const currentRow = direction === "horizontal" ? row : row + i;
-        const currentCol = direction === "horizontal" ? col + i;
+        const currentCol = direction === "horizontal" ? col + i : col;
 
         if (
             currentRow >= gridSize ||
@@ -81,11 +84,11 @@ function canPlaceShip(row, col, size, direction) {
 }
 
 // Sijoittaa laivan ruudukkoon
-function placeShip(row, col, size, direction) {
+function placeShip(row, col, size, direction, ship) {
     for (let i = 0; i < size; i++) {
         const currentRow = direction === "horizontal" ? row : row + i;
         const currentCol = direction === "horizontal" ? col + i;
-        shipLocations.push({ row: currentRow, col: currentCol });
+        shipLocations.push({ row: currentRow, col: currentCol, ship });
     }
 }
 
@@ -95,18 +98,29 @@ function handleCellClick(event) {
     const row = parseInt(cell.dataset.row);
     const col = parseInt(cell.dataset.col);
 
-    // Tarkistetaan, osuiko klikkaus laivaan
-    if (shipLocations.some(loc => loc.row === row && loc.col === col)) {
+    const hitLocation = shipLocations.find(loc => loc.row === row && loc.col === col);
+    if (hitLocation) {
         cell.classList.add("hit");
+        hitLocation.ship.hits++;
         messageElement.textContent = "Osuit laivaan!";
+        updateShipStatus();
     } else {
         cell.classList.add("miss");
         messageElement.textContent = "Ohi meni! Yritä uudelleen.";
     }
     cell.removeEventListener("click", handleCellClick);
 
-    // Tarkista, onko peli voitettu
     checkWinCondition();
+}
+
+// Päivittää laivojen tilalistan
+function updateShipStatus() {
+    shipStatusElement.innerHTML = '';
+    ships.forEach(ship => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${ship.name} - ${ship.hits >= ship.size ? 'Upotettu' : 'Jäljellä'}`;
+        shipStatusElement.appendChild(listItem);
+    });
 }
 
 // Funktio tarkistamaan, onko peli voitettu
