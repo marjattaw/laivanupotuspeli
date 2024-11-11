@@ -1,21 +1,91 @@
-// Määritetään peliruudukon koko
-const gridSize = 5;
+// Määritetään peliruudukon koko ja laivat
+const gridSize = 10;
 const gridElement = document.getElementById("grid");
 const messageElement = document.getElementById("message");
 
-// Asetetaan laivan sijainti satunnaisesti
-const shipRow = Math.floor(Math.random() * gridSize);
-const shipCol = Math.floor(Math.random() * gridSize);
+const ships = [
+    { name: "Lentotukialus", size: 5 },
+    { name: "Taistelulaiva", size: 4 },
+    { name: "Risteilijä", size: 3 },
+    { name: "Risteilijä", size: 3 },
+    { name: "Hävittäjä", size: 2 },
+    { name: "Hävittäjä", size: 2 },
+    { name: "Hävittäjä", size: 2 },
+    { name: "Sukellusvene", size: 1 },
+    { name: "Sukellusvene", size: 1 },
+    { name: "Sukellusvene", size: 1 },
+    { name: "Sukellusvene", size: 1 }
+];
 
-// Luodaan peli-ruudukko
-for (let row = 0; row < gridSize; row++) {
-    for (let col = 0; col < gridSize; col++) {
-        const cell = document.createElement("div");
-        cell.classList.add("cell");
-        cell.dataset.row = row;
-        cell.dataset.col = col;
-        cell.addEventListener("click", handleCellClick);
-        gridElement.appendChild(cell);
+// Laivojen sijainnit
+let shipLocations = [];
+
+// Funktio pelin uudelleenkäynnistykseen
+function restartGame() {
+    gridElement.innerHTML = ""; // Tyhjentää ruudukon
+    messageElement.textContent = ""; // Tyhjentää viestit
+    shipLocations = []; // Nollaa laivojen sijainnit
+    createGrid(); // Luo uusi ruudukko
+    placeShips(); // Sijoittaa laivat ruudukkoon
+    console.log("Peli aloitettu uudelleen");
+}
+
+// Luo peliruudukko
+function createGrid() {
+    for (let row = 0; row < gridSize; row++) {
+        for (let col = 0; col < gridSize; col++) {
+            const cell = document.createElement("div");
+            cell.classList.add("cell");
+            cell.dataset.row = row;
+            cell.dataset.col = col;
+            cell.addEventListener("click", handleCellClick);
+            gridElement.appendChild(cell);
+        }
+    }
+    console.log("Ruudukko luotu");
+}
+
+// Sijoitetaan laivat satunnaisesti ruudukkoon
+function placeShips() {
+    ships.forEach(ship => {
+        let placed = false;
+        while (!placed) {
+            const direction = Math.random() < 0.5 ? "horizontal" : "vertical";
+            const startRow = Math.floor(Math.random() * gridSize);
+            const startCol = Math.floor(Math.random() * gridSize);
+
+            if (canPlaceShip(startRow, startCol, ship.size, direction)) {
+                placeShip(startRow, startCol, ship.size, direction);
+                placed = true;
+            }
+        }
+    });
+    console.log("Laivat sijoitettu:", shipLocations);
+}
+
+// Tarkistaa, että laiva voidaan sijoittaa tiettyyn paikkaan
+function canPlaceShip(row, col, size, direction) {
+    for (let i = 0; i < size; i++) {
+        const currentRow = direction === "horizontal" ? row : row + i;
+        const currentCol = direction === "horizontal" ? col + i;
+
+        if (
+            currentRow >= gridSize ||
+            currentCol >= gridSize ||
+            shipLocations.some(loc => loc.row === currentRow && loc.col === currentCol)
+        ) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Sijoittaa laivan ruudukkoon
+function placeShip(row, col, size, direction) {
+    for (let i = 0; i < size; i++) {
+        const currentRow = direction === "horizontal" ? row : row + i;
+        const currentCol = direction === "horizontal" ? col + i;
+        shipLocations.push({ row: currentRow, col: currentCol });
     }
 }
 
@@ -25,14 +95,28 @@ function handleCellClick(event) {
     const row = parseInt(cell.dataset.row);
     const col = parseInt(cell.dataset.col);
 
-    if (row === shipRow && col === shipCol) {
+    // Tarkistetaan, osuiko klikkaus laivaan
+    if (shipLocations.some(loc => loc.row === row && loc.col === col)) {
         cell.classList.add("hit");
-        messageElement.textContent = "Osuit laivaan! Voitit pelin!";
-        endGame();
+        messageElement.textContent = "Osuit laivaan!";
     } else {
         cell.classList.add("miss");
-        cell.removeEventListener("click", handleCellClick);
         messageElement.textContent = "Ohi meni! Yritä uudelleen.";
+    }
+    cell.removeEventListener("click", handleCellClick);
+
+    // Tarkista, onko peli voitettu
+    checkWinCondition();
+}
+
+// Funktio tarkistamaan, onko peli voitettu
+function checkWinCondition() {
+    const hits = document.querySelectorAll(".hit").length;
+    const totalShipCells = shipLocations.length;
+
+    if (hits === totalShipCells) {
+        messageElement.textContent = "Kaikki laivat upotettu! Voitit pelin!";
+        endGame();
     }
 }
 
@@ -42,4 +126,8 @@ function endGame() {
     cells.forEach(cell => {
         cell.removeEventListener("click", handleCellClick);
     });
+    console.log("Peli päättynyt");
 }
+
+// Kutsutaan pelin uudelleenkäynnistys alussa
+restartGame();

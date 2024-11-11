@@ -3,23 +3,36 @@
 body {
     font-family: Arial, sans-serif;
     text-align: center;
+    background-color: #f0f8ff;
+    color: #333;
+    margin: 0;
+    padding: 0;
 }
 
 h1 {
     color: #333;
+    margin-top: 20px;
+}
+
+p {
+    font-size: 1.2em;
+    color: #555;
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(20, 30px); /* 20 saraketta, jokainen ruutu 30x30px */
-    gap: 2px;
+    grid-template-columns: repeat(10, 40px); /* 10 saraketta, jokainen ruutu 40x40px */
+    gap: 3px;
     margin: 20px auto;
     width: max-content;
+    border: 2px solid #333;
+    padding: 10px;
+    background-color: #e6f7ff;
 }
 
 .cell {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     background-color: #add8e6;
     border: 1px solid #333;
     cursor: pointer;
@@ -40,8 +53,38 @@ h1 {
     color: black;
 }
 
+.cell:hover {
+    background-color: #87ceeb; /* Korostusväri hover-tilassa */
+}
+
 #message {
     font-size: 1.2em;
     margin-top: 15px;
     color: #555;
+}
+
+/* Voitto- ja ohi-menoviestien tyylit */
+.win-message {
+    color: green;
+    font-weight: bold;
+}
+
+.miss-message {
+    color: orange;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #555;
 }
