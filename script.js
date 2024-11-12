@@ -20,6 +20,10 @@ const ships = [
 // Laivojen sijainnit
 let shipLocations = [];
 
+// Äänitiedostot
+const hitSound = new Audio("voices/bomb.mp3");
+const missSound = new Audio("voices/hutipommi.mp3");
+
 // Funktio pelin uudelleenkäynnistykseen
 function restartGame() {
     gridElement.innerHTML = ""; // Tyhjentää ruudukon
@@ -99,9 +103,11 @@ function handleCellClick(event) {
     if (shipLocations.some(loc => loc.row === row && loc.col === col)) {
         cell.classList.add("hit");
         messageElement.textContent = "Osuit laivaan!";
+        hitSound.play(); // Soittaa osumaäänen
     } else {
         cell.classList.add("miss");
         messageElement.textContent = "Ohi meni! Yritä uudelleen.";
+        missSound.play(); // Soittaa hutiäänen
     }
     cell.removeEventListener("click", handleCellClick);
 
