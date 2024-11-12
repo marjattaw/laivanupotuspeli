@@ -21,7 +21,7 @@ const ships = [
 let shipLocations = [];
 
 // Äänitiedostot
-const hitSound = new Audio("voices/bomb.mp3");
+const hitSound = new Audio("voices/pommi.mp3");
 const missSound = new Audio("voices/hutipommi.mp3");
 
 // Funktio pelin uudelleenkäynnistykseen
