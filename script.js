@@ -23,6 +23,8 @@ let shipLocations = [];
 // Äänitiedostot
 const hitSound = new Audio("voices/pommi.mp3");
 const missSound = new Audio("voices/hutipommi.mp3");
+hitSound.preload = "auto";
+missSound.preload = "auto";
 
 // Funktio pelin uudelleenkäynnistykseen
 function restartGame() {
@@ -103,10 +105,12 @@ function handleCellClick(event) {
     if (shipLocations.some(loc => loc.row === row && loc.col === col)) {
         cell.classList.add("hit");
         messageElement.textContent = "Osuit laivaan!";
+        hitSound.currentTime = 0; // Nollaa äänen aikakohdan, jos ääni soitetaan nopeasti peräkkäin
         hitSound.play(); // Soittaa osumaäänen
     } else {
         cell.classList.add("miss");
         messageElement.textContent = "Ohi meni! Yritä uudelleen.";
+        missSound.currentTime = 0;
         missSound.play(); // Soittaa hutiäänen
     }
     cell.removeEventListener("click", handleCellClick);
