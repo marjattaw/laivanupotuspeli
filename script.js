@@ -23,12 +23,14 @@ let shipLocations = [];
 // Äänitiedostot
 const hitSound = new Audio("voices/pommi.mp3");
 const missSound = new Audio("voices/huti.mp3");
-const loseSound = new Audio("voice/lose.mp3");
-const winSound = new Audio("voice/win.mp3");
+const loseSound = new Audio("voices/lose.mp3");
+const winSound = new Audio("voices/win.mp3");
+const backSound = new Audio("voices/tausta.mp3")
 hitSound.preload = "auto";
 missSound.preload = "auto";
 loseSound.preload = "auto";
 winSound.preload = "auto";
+backSound.autoplay = "auto";
 
 // Funktio pelin uudelleenkäynnistykseen
 function restartGame() {
@@ -38,6 +40,8 @@ function restartGame() {
     createGrid(); // Luo uusi ruudukko
     placeShips(); // Sijoittaa laivat ruudukkoon
     console.log("Peli aloitettu uudelleen");
+    backSound.autoplay();
+    
 }
 
 // Luo peliruudukko
@@ -111,6 +115,7 @@ function handleCellClick(event) {
         messageElement.textContent = "Osuit laivaan!";
         hitSound.currentTime = 0; // Nollaa äänen aikakohdan, jos ääni soitetaan nopeasti peräkkäin
         hitSound.play(); // Soittaa osumaäänen
+        
     } else {
         cell.classList.add("miss");
         messageElement.textContent = "Ohi meni! Yritä uudelleen.";
@@ -121,6 +126,7 @@ function handleCellClick(event) {
 
     // Tarkista, onko peli voitettu
     checkWinCondition();
+
 }
 
 
@@ -132,10 +138,10 @@ function checkWinCondition() {
     if (hits === totalShipCells) {
         messageElement.classList.add("checkWinCondition")
         messageElement.textContent = "Kaikki laivat upotettu! Voitit pelin!";
+        winSound.play(); // soittaa voittoäänen
         endGame();
-   
+    } 
     }
-}
 
 // Funktio lopettamaan peli onnistuneen osuman jälkeen
 function endGame() {
@@ -144,7 +150,7 @@ function endGame() {
         cell.removeEventListener("click", handleCellClick);
     });
     console.log("Peli päättynyt");
-    winSound.play(); // soittaa voittoäänen
+    
     
 }
 
