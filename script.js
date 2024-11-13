@@ -22,9 +22,13 @@ let shipLocations = [];
 
 // Äänitiedostot
 const hitSound = new Audio("voices/pommi.mp3");
-const missSound = new Audio("voices/hutipommi.mp3");
+const missSound = new Audio("voices/huti.mp3");
+const loseSound = new Audio("voice/lose.mp3");
+const winSound = new Audio("voice/win.mp3");
 hitSound.preload = "auto";
 missSound.preload = "auto";
+loseSound.preload = "auto";
+winSound.preload = "auto";
 
 // Funktio pelin uudelleenkäynnistykseen
 function restartGame() {
@@ -119,14 +123,17 @@ function handleCellClick(event) {
     checkWinCondition();
 }
 
+
 // Funktio tarkistamaan, onko peli voitettu
 function checkWinCondition() {
     const hits = document.querySelectorAll(".hit").length;
     const totalShipCells = shipLocations.length;
 
     if (hits === totalShipCells) {
+        messageElement.classList.add("checkWinCondition")
         messageElement.textContent = "Kaikki laivat upotettu! Voitit pelin!";
         endGame();
+   
     }
 }
 
@@ -137,6 +144,8 @@ function endGame() {
         cell.removeEventListener("click", handleCellClick);
     });
     console.log("Peli päättynyt");
+    winSound.play(); // soittaa voittoäänen
+    
 }
 
 // Kutsutaan pelin uudelleenkäynnistys alussa
