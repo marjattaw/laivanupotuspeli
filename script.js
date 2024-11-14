@@ -25,12 +25,33 @@ const hitSound = new Audio("voices/pommi.mp3");
 const missSound = new Audio("voices/huti.mp3");
 const loseSound = new Audio("voices/lose.mp3");
 const winSound = new Audio("voices/win.mp3");
-const backSound = new Audio("voices/tausta.mp3")
 hitSound.preload = "auto";
 missSound.preload = "auto";
 loseSound.preload = "auto";
 winSound.preload = "auto";
-backSound.autoplay = "auto";
+
+// Taustaääni
+const backgroundSound = new Audio("voices/tausta.mp3"); 
+backgroundSound.loop = true; // Toistaa äänen jatkuvasti
+backgroundSound.volume = 0.5; // Asetetaan äänenvoimakkuus
+let isBackgroundSoundOn = true; // Funktio taustaäänen päälle/pois kytkemiseen
+
+function toggleBackgroundSound() {     
+    if (isBackgroundSoundOn) {         
+        backgroundSound.pause();
+        isBackgroundSoundOn = false;         
+        //document.querySelector("button[onclick='toggleBackgroundSound()']").textContent = "Taustaäänet päälle";
+     } else {         
+        backgroundSound.play();         
+        isBackgroundSoundOn = true;         
+        //document.querySelector("button[onclick='toggleBackgroundSound()']").textContent = "Taustaäänet pois"; 
+    }
+} 
+
+// Käynnistetään taustaääni automaattisesti pelin alussa
+function startBackgroundSound() { 
+    backgroundSound.play();
+}
 
 // Funktio pelin uudelleenkäynnistykseen
 function restartGame() {
@@ -39,9 +60,8 @@ function restartGame() {
     shipLocations = []; // Nollaa laivojen sijainnit
     createGrid(); // Luo uusi ruudukko
     placeShips(); // Sijoittaa laivat ruudukkoon
+    startBackgroundSound();
     console.log("Peli aloitettu uudelleen");
-    backSound.autoplay();
-    
 }
 
 // Luo peliruudukko
@@ -155,4 +175,4 @@ function endGame() {
 }
 
 // Kutsutaan pelin uudelleenkäynnistys alussa
-restartGame();
+//restartGame();
